@@ -29,8 +29,6 @@ async fn list_accumulated_ingredients(slugs: Vec<&str>) -> Vec<Ingredient> {
         ingredients.append(&mut ingredients_from_url);
     }
 
-    assert!(true==true);
-
     let mut accumulated_ingredients = accumulate(ingredients);
     
     accumulated_ingredients.sort_by(|a, b| a.name.cmp(&b.name));
