@@ -1,0 +1,3 @@
+{
+    "rust-analyzer.linkedProjects": ["netlify/functions/accumulator/Cargo.toml"]
+}
