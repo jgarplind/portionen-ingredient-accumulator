@@ -1,23 +1,35 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import React from 'react'
+import type { NextPage } from "next";
+import Head from "next/head";
+import React from "react";
+import { ComboxboxMultiSelect } from "../components/ComboboxMultiSelect";
 // import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import styles from "../styles/Home.module.css";
+
+const recipes = [
+  {
+    label: "Pizza med grönkål och pumpatopping",
+    value: "pizza-med-gronkal-och-pumpatopping",
+  },
+  {
+    label: "Griljerad seitan till julbordet",
+    value: "griljerad-seitan-till-julbordet",
+  },
+];
 
 const Home: NextPage = () => {
   const [ingredients, setIngredients] = React.useState<any[]>([]);
+  const [selectedRecipes, setSelectedRecipes] = React.useState<string[]>([]);
 
   const accumulate = async (event: React.SyntheticEvent) => {
-    const target = event.currentTarget as typeof event.currentTarget & {
-      url1: { value: string }
-    }
-    event.preventDefault()
-    const queryParameters = new URLSearchParams()
-    queryParameters.append("urls", target.url1.value)
-    const response = await fetch(`/.netlify/functions/accumulator?${queryParameters.toString()}`)
-    const json = await response.json()
-    setIngredients(json)
-  }
+    event.preventDefault();
+    const queryParameters = new URLSearchParams();
+    selectedRecipes.forEach((sr) => queryParameters.append("urls", sr));
+    const response = await fetch(
+      `/.netlify/functions/accumulator?${queryParameters.toString()}`
+    );
+    const json = await response.json();
+    setIngredients(json);
+  };
 
   return (
     <div className={styles.container}>
@@ -29,21 +41,25 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Skapa inköpslistor utifrån recept från <a href="https://undertian.com/">Portionen under tian</a>
+          Skapa inköpslistor utifrån recept från{" "}
+          <a href="https://undertian.com/">Portionen under tian</a>
         </h1>
-      
-      <form onSubmit={accumulate}>
-        <label>URL till recept
-          {/* TODO: Multiple urls */}
-          {/* TODO: Nice selector, maybe autocomplete based on known URLs. How can we know? */}
-          <input name="url1" />
-        </label>
-        </form>
-        
-      <ul>{
-        ingredients.map(({name, amount, unit}) => <li key={`${name}${unit}`}>{name}: {amount} {unit}</li>)
-}</ul>
 
+        <form onSubmit={accumulate}>
+          <ComboxboxMultiSelect
+            options={recipes}
+            setSelectedValues={setSelectedRecipes}
+          />
+          <button>Hämta ingredienslista</button>
+        </form>
+
+        <ul>
+          {ingredients.map(({ name, amount, unit }) => (
+            <li key={`${name}${unit}`}>
+              {name}: {amount} {unit}
+            </li>
+          ))}
+        </ul>
       </main>
 
       {/* <footer className={styles.footer}>
@@ -59,7 +75,7 @@ const Home: NextPage = () => {
         </a>
       </footer> */}
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
