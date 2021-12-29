@@ -14,15 +14,83 @@ use lambda_runtime::{handler_fn, Context, Error};
 // use log::LevelFilter;
 // use simple_logger::SimpleLogger;
 
+const KNOWN_VOLUME_UNITS: [&str; 6] = ["l", "dl", "ml", "msk", "tsk", "krm"];
+
+fn is_volume(unit: &str) -> bool {
+    
+    if KNOWN_VOLUME_UNITS.into_iter().any(|known_unit| known_unit == unit) {
+        return true
+    }
+    false
+}
+
+fn convert_amount_to_existing_unit(amount_in_old_unit: f32, old_unit: &str, existing_unit: &str) -> f32 {
+    let amount_in_ml = match old_unit {
+        "l" => 1000.0 * amount_in_old_unit,
+        "dl" => 100.0 * amount_in_old_unit,
+        "ml" => amount_in_old_unit,
+        "msk" => 15.0 * amount_in_old_unit,
+        "tsk" => 5.0 * amount_in_old_unit,
+        "krm" => amount_in_old_unit,
+        _ => 1.0
+    };
+    return match existing_unit {
+        "l" => amount_in_ml / 1000.0,
+        "dl" => amount_in_ml / 100.0,
+        "ml" => amount_in_ml,
+        "msk" => amount_in_ml / 15.0,
+        "tsk" => amount_in_ml / 5.0,
+        "krm" => amount_in_ml,
+        _ => 1.0
+    }
+}
+
+fn normalize(amount: f32, unit: &str) -> (f32, &str) {
+    return match unit {
+        "dl" => if amount >= 10.0 { (amount / 10.0, "l") } else { (amount, unit) } 
+        "ml" | "krm" => 
+            if amount >= 1000.0 { (amount / 1000.0, "l") } 
+            else if amount >= 100.0 { (amount / 100.0, "dl") } 
+            else if amount >= 15.0 { (amount / 15.0, "msk") } 
+            else if amount >= 5.0 { (amount / 5.0, "tsk") } 
+            else { (amount, unit) } 
+        "msk" => 
+            if amount >= 1000.0 / 15.0 { (amount * 15.0 / 1000.0, "l") } 
+            else if amount >= 100.0 / 15.0 { (amount * 15.0 / 100.0, "dl") } 
+            else { (amount, unit) } 
+        "tsk" => 
+            if amount >= 200.0 { (amount / 200.0, "l") } 
+            else if amount >= 20.0 { (amount / 20.0, "dl") } 
+            else if amount >= 3.0 { (amount / 3.0, "msk") } 
+            else { (amount, unit) }
+        _ => (amount, unit)
+    };
+}
+
+fn deduplicate(ingredients: Vec<Ingredient>) -> Vec<Ingredient> {
+    let mut dict: HashMap<String, (f32, String)> = HashMap::new();
+    for ingredient in ingredients {
+        let key = ingredient.name;
+        if dict.contains_key(&key) {
+            let (existing_amount, existing_unit) = dict.get(&key).unwrap();
+            let mut amount_to_add = ingredient.amount;
+            if existing_unit != &ingredient.unit {
+                amount_to_add = convert_amount_to_existing_unit(ingredient.amount, &ingredient.unit, &existing_unit);
+            }
+            dict.insert(key, (existing_amount + amount_to_add, String::from(existing_unit)));
+        } else {
+            dict.insert(key, (ingredient.amount, ingredient.unit));
+        }
+    }
+
+    let mut accumulated_ingredients: Vec<Ingredient> = Vec::new();
+    for (name, (amount, unit)) in dict {
+        accumulated_ingredients.push(Ingredient { amount, name, unit })
+    }
+    accumulated_ingredients
+}
+
 async fn list_accumulated_ingredients(slugs: Vec<&str>) -> Vec<Ingredient> {
-    // let args: Vec<String> = env::args().collect();
-
-    // let urls = &args[1..];
-    // Example arguments: 
-    // let urls = vec!["https://undertian.com/recept/pizza-med-gronkal-och-pumpatopping/", "https://undertian.com/recept/griljerad-seitan-till-julbordet/"];
-
-    // TODO: Validate urls
-
     let mut ingredients: Vec<Ingredient> = Vec::new(); 
     for slug in slugs {
         let mut ingredients_from_url = list_ingredients(slug).await;
@@ -34,6 +102,20 @@ async fn list_accumulated_ingredients(slugs: Vec<&str>) -> Vec<Ingredient> {
     accumulated_ingredients.sort_by(|a, b| a.name.cmp(&b.name));
 
     accumulated_ingredients
+
+    // TODO: Extend logic to consider:
+    // - weights
+    // - incompatible units like "st" and "kg" (probably need additional dictionary entry then..)
+
+    // let deduplicated_ingredients = deduplicate(accumulated_ingredients);
+
+    // let normalized_ingredients = deduplicated_ingredients.into_iter()
+    // .map(|di| {
+    //     let (amount, unit) = normalize(di.amount, &di.unit);
+    //     return Ingredient { name: di.name, amount, unit: String::from(unit)};
+    // }).collect();
+
+    // normalized_ingredients
 }
 
 #[derive(Serialize, Deserialize, Debug)]
