@@ -1,0 +1,35 @@
+.list {
+  margin: 0;
+  padding: 0;
+}
+
+.even {
+  background-color: var(--bg-color);
+}
+
+.table {
+  border: 2px solid var(--text-color);
+  border-radius: 4px;
+  border-collapse: collapse;
+  width: min(100%, 600px);
+}
+
+.tableHeaderCell {
+  text-align: left;
+  border-bottom: 2px solid var(--text-color);
+  font-size: 110%;
+  background-color: var(--highlight-color);
+}
+
+.tableCell {
+  font-weight: 500;
+  padding: 1rem;
+}
+
+.tableCell:not(:first-child) {
+  text-align: center;
+}
+
+.tableRow:nth-child(even) .tableCell {
+  background-color: var(--highlight-color);
+}

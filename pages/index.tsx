@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import React from "react";
 import { ComboxboxMultiSelect } from "../components/ComboboxMultiSelect";
-import { IngredientList } from "../components/IngredientList";
+import { IngredientTable } from "../components/IngredientTable";
 import styles from "../styles/Home.module.css";
 
 const recipes = [
@@ -1099,7 +1099,7 @@ const Home: NextPage = () => {
           </button>
         </form>
 
-        <IngredientList ingredients={ingredients} />
+        <IngredientTable ingredients={ingredients} />
       </main>
 
       {/* <footer className={styles.footer}>
