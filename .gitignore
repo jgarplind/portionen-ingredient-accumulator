@@ -39,3 +39,4 @@ yarn-error.log*
 # Local Netlify folder
 .netlify
 netlify/functions/accumulator/target
+netlify/functions/recipe_enumerator/target

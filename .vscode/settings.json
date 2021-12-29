@@ -1,3 +1,6 @@
 {
-    "rust-analyzer.linkedProjects": ["netlify/functions/accumulator/Cargo.toml"]
+  "rust-analyzer.linkedProjects": [
+    "netlify/functions/accumulator/Cargo.toml",
+    "netlify/functions/recipe_enumerator/Cargo.toml"
+  ]
 }
