@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import React from "react";
 import { ComboxboxMultiSelect } from "../components/ComboboxMultiSelect";
+import { IngredientList } from "../components/IngredientList";
 import styles from "../styles/Home.module.css";
 
 const recipes = [
@@ -314,10 +315,6 @@ const recipes = [
     value: "havrerisotto-med-pumpa-och-salvia",
   },
   {
-    label: "Havrerisotto med pumpa och salvia",
-    value: "havrerisotto-med-pumpa-och-salvia",
-  },
-  {
     label: "Hembakat, billigt och kalljäst bröd",
     value: "hembakat-billigt-och-kalljast-brod",
   },
@@ -410,10 +407,6 @@ const recipes = [
     value: "kramig-pasta-med-oliver-och-svarta-bonor",
   },
   {
-    label: "Krämig pasta med oliver och svarta bönor",
-    value: "kramig-pasta-med-oliver-och-svarta-bonor",
-  },
-  {
     label: "Krämig spenatgryta och naan på muurikka",
     value: "kramig-spenatgryta-och-naan-pa-muurikka",
   },
@@ -424,10 +417,6 @@ const recipes = [
   {
     label: "Krämig zucchini- och svamppasta",
     value: "kramig-zucchini-och-svamppasta",
-  },
-  {
-    label: "Krämig ärtpasta med vita bönor",
-    value: "kramig-artpasta-med-vita-bonor",
   },
   {
     label: "Krämig ärtpasta med vita bönor",
@@ -454,10 +443,6 @@ const recipes = [
     value: "lins-och-pumpabollar-med-ajvar-relish",
   },
   {
-    label: "Lins- och pumpabollar med ajvar relish",
-    value: "lins-och-pumpabollar-med-ajvar-relish",
-  },
-  {
     label: "Linsbollar med tomatsås och spagetti",
     value: "linsbollar-med-tomatsas-och-spagetti",
   },
@@ -474,11 +459,7 @@ const recipes = [
     value: "linssoppa-med-rotfrukter-och-grillad-paprika-i-mattermos",
   },
   {
-    label: "Linssoppa med rotfrukter och grillad paprikaâ€¯",
-    value: "linssoppa-med-rotfrukter-och-grillad-paprika%e2%80%af",
-  },
-  {
-    label: "Linssoppa med rotfrukter och grillad paprikaâ€¯",
+    label: "Linssoppa med rotfrukter och grillad paprika",
     value: "linssoppa-med-rotfrukter-och-grillad-paprika%e2%80%af",
   },
   {
@@ -499,7 +480,7 @@ const recipes = [
     value: "majs-och-kokossoppa-med-svarta-bonor",
   },
   {
-    label: "Majs, bön och jalapeÃ±o-fritters med coleslaw och tortillabröd",
+    label: "Majs, bön och jalapeño-fritters med coleslaw och tortillabröd",
     value: "majs-bon-och-jalapeno-fritters-med-coleslaw-och-tortillabrod",
   },
   {
@@ -612,10 +593,6 @@ const recipes = [
     value: "pasta-med-ugnsgratinerad-fetaost-tomat-och-vita-bonor",
   },
   {
-    label: "Pasta med ugnsgratinerad fetaost, tomat och vita bönor",
-    value: "pasta-med-ugnsgratinerad-fetaost-tomat-och-vita-bonor",
-  },
-  {
     label: "Pastaplåt med ugnsrostade grönsaker",
     value: "pastaplat-med-ugnsrostade-gronsaker",
   },
@@ -720,10 +697,6 @@ const recipes = [
     value: "potatissoppa-och-vitbonrora-med-orter-och-citron",
   },
   {
-    label: "Potatissoppa och vitbönröra med örter och citron",
-    value: "potatissoppa-och-vitbonrora-med-orter-och-citron",
-  },
-  {
     label: "Proteinbollar",
     value: "proteinbollar",
   },
@@ -734,14 +707,6 @@ const recipes = [
   {
     label: "Pumpa- och linssoppa med kokos och rostad brysselkål",
     value: "pumpa-och-linssoppa-med-kokos-och-rostad-brysselkal",
-  },
-  {
-    label: "Pumpa- och linssoppa med kokos och rostad brysselkål",
-    value: "pumpa-och-linssoppa-med-kokos-och-rostad-brysselkal",
-  },
-  {
-    label: "Pumpagryta med garam masala och naanbröd",
-    value: "pumpagryta-med-garam-masala-och-hemmagjort-naanbrod",
   },
   {
     label: "Pumpagryta med garam masala och naanbröd",
@@ -756,20 +721,12 @@ const recipes = [
     value: "pumpapaj-med-salvia-spenat-och-fetaost",
   },
   {
-    label: "Pumpapaj med salvia, spenat och fetaost",
-    value: "pumpapaj-med-salvia-spenat-och-fetaost",
-  },
-  {
     label: "Pumpapasta med grönkålstopping",
     value: "pumpapasta-med-gronkalstopping",
   },
   {
     label: "Pumpapasta- pasta på pumpa, örtolja, citron",
     value: "pumpapasta",
-  },
-  {
-    label: "Pumpapizza med brysselkål och snabbpicklad rödlök",
-    value: "pumpapizza-med-brysselkal-och-snabbpicklad-rodlok",
   },
   {
     label: "Pumpapizza med brysselkål och snabbpicklad rödlök",
@@ -852,10 +809,6 @@ const recipes = [
     value: "snabb-tomatpasta-med-rostade-kikartor",
   },
   {
-    label: "Snabb tomatpasta med rostade kikärtor",
-    value: "snabb-tomatpasta-med-rostade-kikartor",
-  },
-  {
     label: "Spenat och svamppaj med fetaost",
     value: "spenat-och-svamppaj-med-fetaost",
   },
@@ -866,10 +819,6 @@ const recipes = [
   {
     label: "Svamprisotto med rödbetor i ugn",
     value: "svamprisotto-med-rodbetor-i-ugn",
-  },
-  {
-    label: "Svampsoppa med vita bönor och timjan",
-    value: "svampsoppa-med-vita-bonor-och-timjan",
   },
   {
     label: "Svampsoppa med vita bönor och timjan",
@@ -892,16 +841,8 @@ const recipes = [
     value: "tomatsoppa-med-fetaost",
   },
   {
-    label: "Tomatsoppa med fetaost",
-    value: "tomatsoppa-med-fetaost",
-  },
-  {
     label: "Tomatsoppa med ugnsrostade blomkål",
     value: "tomatsoppa-med-ugnsrostade-blomkal",
-  },
-  {
-    label: "Tomatsoppa med ört, -tomat och fetabröd",
-    value: "tomatsoppa-med-ort-tomat-och-fetabrod-2",
   },
   {
     label: "Tomatsoppa med ört, -tomat och fetabröd",
@@ -992,15 +933,11 @@ const recipes = [
     value: "vegansk-rodcurry-pumpagryta-med-kikartor",
   },
   {
-    label: "Vegansk rödcurry pumpagryta med kikärtor",
-    value: "vegansk-rodcurry-pumpagryta-med-kikartor",
-  },
-  {
     label: "Vegansk, billig kålpudding",
     value: "vegansk-billig-kalpudding",
   },
   {
-    label: "Veganska billiga â€köttbullarâ€ med löksås",
+    label: 'Veganska billiga "köttbullar" med löksås',
     value: "veganska-billiga-kottbullar-med-loksas",
   },
   {
@@ -1020,7 +957,7 @@ const recipes = [
     value: "veganska-morot-och-linsbiffar",
   },
   {
-    label: "Veganska â€Köttbullarâ€ med pasta och tomatsås",
+    label: 'Veganska "Köttbullar" med pasta och tomatsås',
     value: "veganska-kottbullar-med-pasta-och-tomatsas",
   },
   {
@@ -1088,10 +1025,6 @@ const recipes = [
     value: "vegopasta-pa-linser",
   },
   {
-    label: "Vegopasta på linser",
-    value: "vegopasta-pa-linser",
-  },
-  {
     label: "Vegoskål med hummus, rotfrukter och grönkålschips",
     value: "vegoskal-med-hummus-rotfrukter-och-gronkalschips",
   },
@@ -1149,26 +1082,24 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
+        <h1 className={styles.title}>Inköpslistegenerator</h1>
+
+        <h2 className={styles.description}>
           Skapa inköpslistor utifrån recept från{" "}
           <a href="https://undertian.com">Portionen under tian</a>
-        </h1>
+        </h2>
 
-        <form onSubmit={accumulate}>
+        <form className={styles.form} onSubmit={accumulate}>
           <ComboxboxMultiSelect
             options={recipes}
             setSelectedValues={setSelectedRecipes}
           />
-          <button>Hämta ingredienslista</button>
+          <button className={[styles.button].join(" ")}>
+            Hämta ingredienslista
+          </button>
         </form>
 
-        <ul>
-          {ingredients.map(({ name, amount, unit }) => (
-            <li key={`${name}${unit}`}>
-              {name}: {amount} {unit}
-            </li>
-          ))}
-        </ul>
+        <IngredientList ingredients={ingredients} />
       </main>
 
       {/* <footer className={styles.footer}>

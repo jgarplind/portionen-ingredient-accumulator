@@ -274,7 +274,7 @@ export const ComboxboxMultiSelect = ({
   return (
     <div className={styles.wrapper}>
       <label id="combo2-label" className={styles.comboLabel}>
-        Receptväljare
+        Välj recept
       </label>
       <span id="combo2-remove" style={{ display: "none" }}>
         remove
@@ -320,6 +320,7 @@ export const ComboxboxMultiSelect = ({
             onClick={openAndFocus}
             onKeyDown={onInputKeyDown}
             ref={inputRef}
+            value={filter}
           />
         </div>
         <div
