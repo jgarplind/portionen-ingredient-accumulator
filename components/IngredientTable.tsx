@@ -34,11 +34,12 @@ export const IngredientTable = ({
   return (
     <table {...getTableProps()} className={styles.table}>
       <thead>
-        {headerGroups.map((hg) => (
-          <tr {...hg.getHeaderGroupProps()}>
-            {hg.headers.map((column) => (
+        {headerGroups.map((hg, hgIndex) => (
+          <tr {...hg.getHeaderGroupProps()} key={hgIndex}>
+            {hg.headers.map((column, columnIndex) => (
               <th
                 {...column.getHeaderProps()}
+                key={columnIndex}
                 className={[styles.tableHeaderCell, styles.tableCell].join(" ")}
               >
                 {column.render("Header")}
@@ -51,10 +52,18 @@ export const IngredientTable = ({
         {rows.map((row, rowIndex) => {
           prepareRow(row);
           return (
-            <tr {...row.getRowProps()} className={styles.tableRow}>
-              {row.cells.map((cell) => {
+            <tr
+              {...row.getRowProps()}
+              key={rowIndex}
+              className={styles.tableRow}
+            >
+              {row.cells.map((cell, cellIndex) => {
                 return (
-                  <td {...cell.getCellProps()} className={styles.tableCell}>
+                  <td
+                    {...cell.getCellProps()}
+                    key={cellIndex}
+                    className={styles.tableCell}
+                  >
                     {cell.render("Cell")}
                   </td>
                 );
