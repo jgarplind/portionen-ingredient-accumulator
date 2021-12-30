@@ -4,6 +4,9 @@
   functions = "netlify/functions"
   publish = ".next"
 
+[context.production]
+environment = { NETLIFY_EXPERIMENTAL_BUILD_RUST_SOURCE = "true" }
+
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.
   #[[redirects]]
