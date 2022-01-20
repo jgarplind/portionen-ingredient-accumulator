@@ -3,7 +3,7 @@ command = """
 next build &&
 mkdir functions
 cargo build --release &&
-cp target/release/portionen-ingredient-accumulator functions/ &&
+cp target/release/ingredient_accumulator functions/ &&
 cp target/release/recipe_enumerator functions/
 """
 functions = "functions"

@@ -1067,7 +1067,7 @@ const Home: NextPage = () => {
     const queryParameters = new URLSearchParams();
     selectedRecipes.forEach((sr) => queryParameters.append("urls", sr));
     const response = await fetch(
-      `/.netlify/functions/accumulator?${queryParameters.toString()}`
+      `/.netlify/functions/ingredient_accumulator?${queryParameters.toString()}`
     );
     const json = await response.json();
     setIngredients(json);
