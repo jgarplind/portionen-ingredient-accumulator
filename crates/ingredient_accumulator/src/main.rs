@@ -62,11 +62,12 @@ async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context
 }
 
 // TODO:
-// Fix lint warnings (check Netlify build log)
-// Simplify working code into more idiomatic Rust
-// Combine more units (like mass)
 // Consider adopting original site's color theme
 // Mobile (small screen) friendlyness
 // Mobile (big thumb) friendlyness
 // Filter out more things like water 
 // Maybe present filtered out things it in some nice way too?
+// Fix lint warnings (deduplicate function)
+// Simplify working code into more idiomatic Rust
+// Some unit tests would be nice
+// Combine same ingredients in different writing (e.g. klyftor, klyfta) 

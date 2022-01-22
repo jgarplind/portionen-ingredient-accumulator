@@ -17,15 +17,36 @@ fn is_volume(unit: &str) -> bool {
     false
 }
 
-fn is_compatible_units(unit1: &str, unit2: &str) -> bool {
-    is_volume(unit1) && is_volume(unit2)
+const KNOWN_MASS_UNITS: [&str; 2] = ["kg", "g"];
+fn is_mass(unit: &str) -> bool {
+    if KNOWN_MASS_UNITS.into_iter().any(|known_unit| known_unit == unit) {
+        return true
+    }
+    false
 }
 
-fn convert_amount_to_existing_unit<'a>(amount_in_old_unit: f32, old_unit: &str, existing_unit: &'a str) -> Option<(f32, &'a str)> {
-    if !is_compatible_units(old_unit, existing_unit) {
-        return None
-    }
+fn is_compatible_units(unit1: &str, unit2: &str) -> bool {
+    is_volume(unit1) && is_volume(unit2)
+    ||
+    is_mass(unit1) && is_mass(unit2)
+}
 
+fn convert_mass<'a>(amount_in_old_unit: f32, old_unit: &str, existing_unit: &'a str) -> Option<(f32, &'a str)> {
+    let amount_in_g = match old_unit {
+        "kg" => 1000.0 * amount_in_old_unit,
+        "g" => amount_in_old_unit,
+        _ => 1.0
+    };
+    let amount_in_existing_unit = match existing_unit {
+        "kg" => amount_in_g / 1000.0,
+        "g" => amount_in_g,
+        _ => 1.0
+    };
+
+    Some((amount_in_existing_unit, existing_unit))
+}
+
+fn convert_volume<'a>(amount_in_old_unit: f32, old_unit: &str, existing_unit: &'a str) -> Option<(f32, &'a str)> {
     let amount_in_ml = match old_unit {
         "l" => 1000.0 * amount_in_old_unit,
         "dl" => 100.0 * amount_in_old_unit,
@@ -48,26 +69,51 @@ fn convert_amount_to_existing_unit<'a>(amount_in_old_unit: f32, old_unit: &str, 
     Some((amount_in_existing_unit, existing_unit))
 }
 
+fn convert_amount_to_existing_unit<'a>(amount_in_old_unit: f32, old_unit: &str, existing_unit: &'a str) -> Option<(f32, &'a str)> {
+    if !is_compatible_units(old_unit, existing_unit) {
+        return None
+    }
+
+    if is_mass(old_unit) {
+        return convert_mass(amount_in_old_unit, old_unit, existing_unit)
+    } else // if is_volume(old_unit) 
+    {
+        return convert_volume(amount_in_old_unit, old_unit, existing_unit)
+    }
+}
+
+// Used to pick the most suitable unit once all ingredients have been accumulated
 fn normalize(amount: f32, unit: &str) -> (f32, &str) {
-    return match unit {
-        "dl" => if amount >= 10.0 { (amount / 10.0, "l") } else { (amount, unit) } 
-        "ml" | "krm" => 
-            if amount >= 1000.0 { (amount / 1000.0, "l") } 
-            else if amount >= 100.0 { (amount / 100.0, "dl") } 
-            else if amount >= 15.0 { (amount / 15.0, "msk") } 
-            else if amount >= 5.0 { (amount / 5.0, "tsk") } 
-            else { (amount, unit) } 
-        "msk" => 
-            if amount >= 1000.0 / 15.0 { (amount * 15.0 / 1000.0, "l") } 
-            else if amount >= 100.0 / 15.0 { (amount * 15.0 / 100.0, "dl") } 
-            else { (amount, unit) } 
-        "tsk" => 
-            if amount >= 200.0 { (amount / 200.0, "l") } 
-            else if amount >= 20.0 { (amount / 20.0, "dl") } 
-            else if amount >= 3.0 { (amount / 3.0, "msk") } 
-            else { (amount, unit) }
-        _ => (amount, unit)
-    };
+    if is_mass(unit) {
+        return match unit {
+            "g" => if amount >= 500.0 { (amount / 500.0, "kg") } else { (amount, unit) } 
+            _ => (amount, unit)
+        };
+    }
+
+    if is_volume(unit) {
+        return match unit {
+            "dl" => if amount >= 10.0 { (amount / 10.0, "l") } else { (amount, unit) } 
+            "ml" | "krm" => 
+                if amount >= 1000.0 { (amount / 1000.0, "l") } 
+                else if amount >= 100.0 { (amount / 100.0, "dl") } 
+                else if amount >= 15.0 { (amount / 15.0, "msk") } 
+                else if amount >= 5.0 { (amount / 5.0, "tsk") } 
+                else { (amount, unit) } 
+            "msk" => 
+                if amount >= 1000.0 / 15.0 { (amount * 15.0 / 1000.0, "l") } 
+                else if amount >= 100.0 / 15.0 { (amount * 15.0 / 100.0, "dl") } 
+                else { (amount, unit) } 
+            "tsk" => 
+                if amount >= 200.0 { (amount / 200.0, "l") } 
+                else if amount >= 20.0 { (amount / 20.0, "dl") } 
+                else if amount >= 3.0 { (amount / 3.0, "msk") } 
+                else { (amount, unit) }
+            _ => (amount, unit)
+        };
+    }
+
+    (amount, unit)
 }
 
 const SEPARATOR: &str = "¤";
@@ -91,24 +137,26 @@ fn deduplicate(ingredients: Vec<Ingredient>) -> Vec<Ingredient> {
     let mut dict: HashMap<String, (f32, String)> = HashMap::new();
     for ingredient in ingredients {
         let key = ingredient.name;
-        if dict.contains_key(&key) {
+        if !dict.contains_key(&key) {
+            dict.insert(key, (ingredient.amount, ingredient.unit));
+        } else {
             let (existing_amount, existing_unit) = dict.get(&key).unwrap();
-            let mut amount_and_unit_to_add = (ingredient.amount, ingredient.unit.clone());
-            if existing_unit != &ingredient.unit {
-                amount_and_unit_to_add = match convert_amount_to_existing_unit(ingredient.amount, &ingredient.unit, &existing_unit) {
-                    Some(x) => (x.0 + existing_amount, String::from(x.1)),
+            let mut amount_and_unit_to_add = (ingredient.amount, ingredient.unit);
+            if existing_unit != &amount_and_unit_to_add.1 {
+                amount_and_unit_to_add = match convert_amount_to_existing_unit(amount_and_unit_to_add.0, &amount_and_unit_to_add.1, &existing_unit) {
+                    Some(confirmed_amount_and_unit_to_add) => (confirmed_amount_and_unit_to_add.0 + existing_amount, String::from(confirmed_amount_and_unit_to_add.1)),
                     None => amount_and_unit_to_add
                 };
             }
+            // The unit may have changed in the previous if-block
             if existing_unit == &amount_and_unit_to_add.1 {
                 dict.insert(key, (existing_amount + amount_and_unit_to_add.0, String::from(existing_unit)));
-            } else {
-                let necessary_duplicate_key = format!("{}{}{}", key, SEPARATOR, &amount_and_unit_to_add.1);
-                let entry = dict.entry(necessary_duplicate_key).or_insert((0.0, amount_and_unit_to_add.1));
-                entry.0 += amount_and_unit_to_add.0;
+            } 
+            // But it could also have been incompatible
+            else {
+                let necessary_duplicate_key = format!("{}{}{}", &amount_and_unit_to_add.0, SEPARATOR, &amount_and_unit_to_add.1);
+                dict.entry(necessary_duplicate_key).or_insert((0.0, amount_and_unit_to_add.1)).0 += amount_and_unit_to_add.0;
             }
-        } else {
-            dict.insert(key, (ingredient.amount, ingredient.unit));
         }
     }
 
@@ -124,10 +172,6 @@ fn deduplicate(ingredients: Vec<Ingredient>) -> Vec<Ingredient> {
 
 pub async fn list_accumulated_ingredients(ingredients: Vec<Ingredient>) -> Vec<Ingredient> {
     let accumulated_ingredients = accumulate(ingredients);
-
-    // TODO: Extend logic to consider:
-    // - weights
-    // - UNIT TEST: incompatible units like "st" and "kg" (probably need additional dictionary entry then..)
 
     let deduplicated_ingredients = deduplicate(accumulated_ingredients);
 
