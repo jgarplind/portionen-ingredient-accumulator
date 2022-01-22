@@ -152,15 +152,17 @@ export const ComboxboxMultiSelect = ({
 
   useEffect(() => {
     setFilteredOptions(filterOptions(options, filter));
-  }, [filter]);
+  }, [filter, options]);
 
   useEffect(() => {
     const shouldBeOpen = filteredOptions.length > 0 && activeLabel !== "";
     open !== shouldBeOpen && setOpen(shouldBeOpen);
-  }, [filteredOptions]);
+    // including 'open' breaks this (brittle) logic
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeLabel, filteredOptions]);
 
   useEffect(() => {
-    // // if active option is not in filtered options, set it to first filtered option
+    // if active option is not in filtered options, set it to first filtered option
     if (
       activeLabel !== "" &&
       !filteredOptions.map((fo) => fo.label).includes(activeLabel)
@@ -170,11 +172,13 @@ export const ComboxboxMultiSelect = ({
       ).label;
       onOptionChange(firstFilteredLabel);
     }
-  }, [filteredOptions]);
+    // won't bother with onOptionChange
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeLabel, filteredOptions, options]);
 
   useEffect(() => {
     setSelectedValues(selectedOptions.map((so) => so.value));
-  }, [selectedOptions]);
+  }, [selectedOptions, setSelectedValues]);
 
   const onInput = (event: React.SyntheticEvent) => {
     setFilter((event.currentTarget as HTMLInputElement).value);
@@ -234,6 +238,12 @@ export const ComboxboxMultiSelect = ({
     }
   };
 
+  const onOptionClick = (label: string) => {
+    onOptionChange(label);
+    updateOption(label);
+    inputRef.current?.focus();
+  };
+
   const onOptionChange = (label: string) => {
     setActiveLabel(label);
 
@@ -241,12 +251,6 @@ export const ComboxboxMultiSelect = ({
       const activeOption = document.getElementById(`${ID_BASE}-${label}`);
       maintainScrollVisibility(activeOption, listboxRef.current);
     }
-  };
-
-  const onOptionClick = (label: string) => {
-    onOptionChange(label);
-    updateOption(label);
-    inputRef.current?.focus();
   };
 
   const updateOption = (label: string) => {
@@ -298,6 +302,8 @@ export const ComboxboxMultiSelect = ({
       </ul>
       <div className={[styles.combo, open ? styles.open : ""].join(" ")}>
         <div
+          // see https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/issues/789
+          // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
           role="combobox"
           aria-haspopup="listbox"
           aria-expanded={open}
@@ -310,16 +316,17 @@ export const ComboxboxMultiSelect = ({
               activeLabel ? `${ID_BASE}-${activeLabel}` : ""
             }`}
             aria-autocomplete="list"
+            aria-controls="listbox2"
             aria-labelledby="combo2-label combo2-selected"
             autoComplete="off"
-            id={ID_BASE}
             className={styles.comboInput}
-            type="text"
-            onInput={onInput}
+            id={ID_BASE}
             onBlur={onInputBlur}
             onClick={openAndFocus}
+            onInput={onInput}
             onKeyDown={onInputKeyDown}
             ref={inputRef}
+            type="text"
             value={filter}
           />
         </div>
