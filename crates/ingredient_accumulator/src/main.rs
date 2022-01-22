@@ -35,14 +35,10 @@ fn construct_error_response(error_code: i64, error_message: &str) -> ApiGatewayP
 }
 
 async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context) -> Result<ApiGatewayProxyResponse, Error> {
-    let maybe_slugs_query_parameter = request.query_string_parameters.get("urls");
-
-    let slugs_query_parameter = match maybe_slugs_query_parameter {
-        Some(slugs) => slugs,
+    let slugs: Vec<&str> = match request.query_string_parameters.get("urls") {
+        Some(slugs_as_csv) => slugs_as_csv.split(", ").collect(),
         _ => return Ok(construct_error_response(400, "Du måste välja minst ett recept"))
     };
-
-    let slugs: Vec<&str> = slugs_query_parameter.split(", ").collect();
 
     let mut ingredients: Vec<Ingredient> = Vec::new(); 
     for slug in slugs {
@@ -66,8 +62,8 @@ async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context
 }
 
 // TODO:
-// Simplify working code into more idiomatic Rust
 // Fix lint warnings (check Netlify build log)
+// Simplify working code into more idiomatic Rust
 // Combine more units (like mass)
 // Consider adopting original site's color theme
 // Mobile (small screen) friendlyness
