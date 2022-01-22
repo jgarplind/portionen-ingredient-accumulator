@@ -22,12 +22,11 @@
 .title {
   margin: 0;
   line-height: 1.15;
-  font-size: 4rem;
+  font-size: clamp(1.875rem, 8vw, 4rem);
 }
 
 .title,
 .description {
-  hyphens: manual;
   text-align: center;
   word-break: break-word;
 }

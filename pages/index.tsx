@@ -60,7 +60,11 @@ const Home: NextPage = () => {
           </button>
         </form>
 
-        <IngredientTable ingredients={ingredients} />
+        {ingredients.length > 0 ? (
+          <IngredientTable ingredients={ingredients} />
+        ) : (
+          <></>
+        )}
       </main>
     </div>
   );

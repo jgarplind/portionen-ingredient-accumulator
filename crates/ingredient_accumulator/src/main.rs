@@ -62,8 +62,6 @@ async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context
 }
 
 // TODO:
-// Consider adopting original site's color theme
-// Mobile (small screen) friendlyness
 // Mobile (big thumb) friendlyness
 // Filter out more things like water 
 // Maybe present filtered out things it in some nice way too?
@@ -71,3 +69,4 @@ async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context
 // Simplify working code into more idiomatic Rust
 // Some unit tests would be nice
 // Combine same ingredients in different writing (e.g. klyftor, klyfta) 
+// Consider adopting original site's color theme (maybe later)
