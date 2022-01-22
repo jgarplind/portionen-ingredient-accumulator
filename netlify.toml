@@ -8,3 +8,7 @@ cp target/release/recipe_enumerator functions/
 """
 functions = "functions"
 publish = ".next"
+
+[dev]
+functions = "crates"
+
