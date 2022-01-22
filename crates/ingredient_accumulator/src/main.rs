@@ -10,6 +10,8 @@ use aws_lambda_events::encodings::Body;
 use http::header::HeaderMap;
 use lambda_runtime::{handler_fn, Context, Error};
 
+use serde::{Serialize, Deserialize};
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let handler = handler_fn(list_ingredients_handler);
@@ -17,8 +19,28 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+struct ErrorMessageWrapper {
+    message_from_backend: String
+}
+
+fn construct_error_response(error_code: i64, error_message: &str) -> ApiGatewayProxyResponse {
+    ApiGatewayProxyResponse {
+        status_code: error_code,
+        headers: HeaderMap::new(),
+        multi_value_headers: HeaderMap::new(),
+        body: Some(Body::Text(serde_json::to_string(&ErrorMessageWrapper{message_from_backend: error_message.to_string()}).unwrap())),
+        is_base64_encoded: Some(false)
+    }
+}
+
 async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context) -> Result<ApiGatewayProxyResponse, Error> {
-    let slugs_query_parameter = request.query_string_parameters.get("urls").unwrap();
+    let maybe_slugs_query_parameter = request.query_string_parameters.get("urls");
+
+    let slugs_query_parameter = match maybe_slugs_query_parameter {
+        Some(slugs) => slugs,
+        _ => return Ok(construct_error_response(400, "Du måste välja minst ett recept"))
+    };
 
     let slugs: Vec<&str> = slugs_query_parameter.split(", ").collect();
 

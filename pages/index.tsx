@@ -1069,8 +1069,18 @@ const Home: NextPage = () => {
     const response = await fetch(
       `/.netlify/functions/ingredient_accumulator?${queryParameters.toString()}`
     );
-    const json = await response.json();
-    setIngredients(json);
+    if (response.status / 100 === 2) {
+      const json = await response.json();
+      setIngredients(json);
+    } else if (response.status / 100 === 4) {
+      let potentialErrorMessageFromBackend = (await response.json())
+        .message_from_backend;
+      alert(potentialErrorMessageFromBackend);
+    } else {
+      let fallbackErrorMessage =
+        "Ett fel som jag inte har tagit höjd för inträffade. Testa att ladda om sidan kanske?";
+      alert(fallbackErrorMessage);
+    }
   };
 
   return (
