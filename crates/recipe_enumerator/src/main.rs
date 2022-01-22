@@ -24,7 +24,7 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-pub(crate) async fn my_handler(event: ApiGatewayProxyRequest, _ctx: Context) -> Result<ApiGatewayProxyResponse, Error> {
+async fn my_handler(_event: ApiGatewayProxyRequest, _ctx: Context) -> Result<ApiGatewayProxyResponse, Error> {
     let recipes = list_all_known_recipes().await;
 
     let serialized = serde_json::to_string(&recipes).unwrap();
