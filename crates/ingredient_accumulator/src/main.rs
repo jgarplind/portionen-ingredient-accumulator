@@ -1,6 +1,6 @@
-extern crate reqwest;
-
 mod scraper;
+use scraper::list_ingredients;
+
 mod ingredient;
 use ingredient::Ingredient;
 use ingredient::list_accumulated_ingredients;
@@ -12,19 +12,19 @@ use lambda_runtime::{handler_fn, Context, Error};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let func = handler_fn(my_handler);
-    lambda_runtime::run(func).await?;
+    let handler = handler_fn(list_ingredients_handler);
+    lambda_runtime::run(handler).await?;
     Ok(())
 }
 
-pub(crate) async fn my_handler(event: ApiGatewayProxyRequest, _ctx: Context) -> Result<ApiGatewayProxyResponse, Error> {
-    let slugs_query_parameter = event.query_string_parameters.get("urls").unwrap();
+async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context) -> Result<ApiGatewayProxyResponse, Error> {
+    let slugs_query_parameter = request.query_string_parameters.get("urls").unwrap();
 
     let slugs: Vec<&str> = slugs_query_parameter.split(", ").collect();
 
     let mut ingredients: Vec<Ingredient> = Vec::new(); 
     for slug in slugs {
-        let mut ingredients_from_url = scraper::list_ingredients(slug).await;
+        let mut ingredients_from_url = list_ingredients(slug).await;
         ingredients.append(&mut ingredients_from_url);
     }
     
@@ -44,7 +44,11 @@ pub(crate) async fn my_handler(event: ApiGatewayProxyRequest, _ctx: Context) -> 
 }
 
 // TODO:
+// Simplify working code into more idiomatic Rust
+// Fix lint warnings (check Netlify build log)
+// Combine more units (like mass)
+// Consider adopting original site's color theme
+// Mobile (small screen) friendlyness
+// Mobile (big thumb) friendlyness
 // Filter out more things like water 
 // Maybe present filtered out things it in some nice way too?
-// Simplify working code into more idiomatic Rust
-// Fix lint warnings
