@@ -62,8 +62,8 @@ async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context
 }
 
 // TODO:
-// Mobile (big thumb) friendlyness
 // Filter out more things like water 
+// Some loading state?
 // Maybe present filtered out things it in some nice way too?
 // Fix lint warnings (deduplicate function)
 // Simplify working code into more idiomatic Rust

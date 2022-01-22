@@ -1,6 +1,5 @@
 import styles from "./IngredientTable.module.css";
 import * as rt from "react-table";
-import { useEffect, useMemo } from "react";
 
 export interface IIngredient {
   name: string;

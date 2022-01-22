@@ -84,36 +84,40 @@ fn convert_amount_to_existing_unit<'a>(amount_in_old_unit: f32, old_unit: &str, 
 
 // Used to pick the most suitable unit once all ingredients have been accumulated
 fn normalize(amount: f32, unit: &str) -> (f32, &str) {
+    let mut internal_amount_and_unit = (amount, unit);
     if is_mass(unit) {
-        return match unit {
+        internal_amount_and_unit = match unit {
             "g" => if amount >= 500.0 { (amount / 500.0, "kg") } else { (amount, unit) } 
             _ => (amount, unit)
         };
     }
 
     if is_volume(unit) {
-        return match unit {
-            "dl" => if amount >= 10.0 { (amount / 10.0, "l") } else { (amount, unit) } 
+        internal_amount_and_unit = match unit {
+            "dl" => if amount >= 5.0 { (amount / 10.0, "l") } else { (amount, unit) } 
             "ml" | "krm" => 
-                if amount >= 1000.0 { (amount / 1000.0, "l") } 
-                else if amount >= 100.0 { (amount / 100.0, "dl") } 
+                if amount >= 500.0 { (amount / 1000.0, "l") } 
+                else if amount >= 50.0 { (amount / 100.0, "dl") } 
                 else if amount >= 15.0 { (amount / 15.0, "msk") } 
                 else if amount >= 5.0 { (amount / 5.0, "tsk") } 
                 else { (amount, unit) } 
             "msk" => 
-                if amount >= 1000.0 / 15.0 { (amount * 15.0 / 1000.0, "l") } 
-                else if amount >= 100.0 / 15.0 { (amount * 15.0 / 100.0, "dl") } 
+                if amount >= 500.0 / 15.0 { (amount * 15.0 / 1000.0, "l") } 
+                else if amount >= 50.0 / 15.0 { (amount * 15.0 / 100.0, "dl") } 
                 else { (amount, unit) } 
             "tsk" => 
-                if amount >= 200.0 { (amount / 200.0, "l") } 
-                else if amount >= 20.0 { (amount / 20.0, "dl") } 
+                if amount >= 100.0 { (amount / 200.0, "l") } 
+                else if amount >= 10.0 { (amount / 20.0, "dl") } 
                 else if amount >= 3.0 { (amount / 3.0, "msk") } 
                 else { (amount, unit) }
             _ => (amount, unit)
         };
     }
 
-    (amount, unit)
+    // Round to two decimals
+    internal_amount_and_unit.0 = (internal_amount_and_unit.0  * 100.0).round() / 100.0;
+
+    internal_amount_and_unit
 }
 
 const SEPARATOR: &str = "¤";
