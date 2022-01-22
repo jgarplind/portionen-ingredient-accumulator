@@ -82,6 +82,21 @@ fn convert_amount_to_existing_unit<'a>(amount_in_old_unit: f32, old_unit: &str, 
     }
 }
 
+#[cfg(test)]
+mod convert_tests {
+    use super::*;
+
+    #[test]
+    fn convert_mass() {
+        assert_eq!(Some((0.1, "kg")), convert_amount_to_existing_unit(100.0, "g", "kg"));
+    }
+
+    #[test]
+    fn convert_volume() {
+        assert_eq!(Some((0.75, "dl")), convert_amount_to_existing_unit(5.0, "msk", "dl"));
+    }
+}
+
 // Used to pick the most suitable unit once all ingredients have been accumulated
 fn normalize(amount: f32, unit: &str) -> (f32, &str) {
     let mut internal_amount_and_unit = (amount, unit);
@@ -118,6 +133,15 @@ fn normalize(amount: f32, unit: &str) -> (f32, &str) {
     internal_amount_and_unit.0 = (internal_amount_and_unit.0  * 100.0).round() / 100.0;
 
     internal_amount_and_unit
+}
+#[cfg(test)]
+mod normalize_tests {
+    use super::*;
+
+    #[test]
+    fn normalize_tsk_to_dl() {
+        assert_eq!((0.67, "dl"), normalize(13.3333333, "tsk"));
+    }
 }
 
 const SEPARATOR: &str = "¤";

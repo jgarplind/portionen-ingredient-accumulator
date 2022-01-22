@@ -62,11 +62,11 @@ async fn list_ingredients_handler(request: ApiGatewayProxyRequest, _ctx: Context
 }
 
 // TODO:
+// Some loading state? (scroll to table? animated button? How to make accessible? check https://stackoverflow.com/a/38599919/4102048)
 // Filter out more things like water 
-// Some loading state?
 // Maybe present filtered out things it in some nice way too?
 // Fix lint warnings (deduplicate function)
 // Simplify working code into more idiomatic Rust
-// Some unit tests would be nice
+// Extend unit tests (integration tests=)
 // Combine same ingredients in different writing (e.g. klyftor, klyfta) 
 // Consider adopting original site's color theme (maybe later)
